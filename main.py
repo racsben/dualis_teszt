@@ -1,10 +1,11 @@
 import random
 import os
-from operator import xor
 
 abc = ["a","b","c","d","e","f","g","h","i","j","k","l","m","n","o","p","q","r","s","t","u","v","w","x","y","z", " "]
 index=[ 0 , 1 , 2 ,  3,  4,  5,  6,  7,  8,  9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26]
 
+betu_szamra = {betu: szam for betu, szam in zip(abc,index)}
+szam_beture = {szam: betu for betu, szam in zip(abc,index)}
 """uzenet = input("Adjon meg egy Üzenetet: ")   #"helloworld" 
 kulcs = input("Adjon meg egy kulcsot: ")    #"abcdefgijkl"
 while len(kulcs) < len(uzenet):
@@ -91,83 +92,80 @@ uzenetl1 = valasztott_szavak[hossz1:]
 uzenetl2 = valasztott_szavak[:hossz2]
 #--------Üzenetek stringgé alakítása--------------
 uzenet1 = ' '.join(uzenetl1)
-print(f"uzenet1: {uzenet1}")
+print(f"{uzenet1=}")
 uzenet2 = ' '.join(uzenetl2)
+print(f"{uzenet2=}")
 
 
 #----------Kulcs generálása-----------------
 length = len(uzenet1)
 kulcs2 = ''.join(random.choices(abc , k=length))
-print(f"kulcs2: {kulcs2}")
+print(f"{kulcs2=}")
 #Kódolom az üzeneteket
 rejt_uzenet1 = kodolas(uzenet1,kulcs2)
 rejt_uzenet2 = kodolas(uzenet2,kulcs2)
-print(rejt_uzenet1)
-#binárisra lefordítom a stringeket
-""" 
-def binarisra(szoveg):
-    return ''.join(format(ord(i), '08b') for i in szoveg)
-
-def stringge(szoveg):
-    return ''.join(chr(int(szoveg[i:i+8], 2)) for i in range(0, len(szoveg), 8)) """
-""" 
-kulcs2_bin = binarisra(kulcs2)
-print(f"Kulcs2_bin: {kulcs2_bin}")
-rejt_uzenet1_bin = binarisra(rejt_uzenet1)
-#print(rejt_uzenet1_bin)
-rejt_uzenet2_bin = binarisra(rejt_uzenet2)
-#print(rejt_uzenet2_bin) """
+print(f"{rejt_uzenet1=}")
+print(f"{rejt_uzenet2=}")
 
 p1_szavak = []
 p2_szavak = []
-kitalalt_kulcs = ""
 
 def dekod2(p1,p2,c1,c2):
     #brute-force/találgatás
     pl1 = p1.split()
+    print(f"{pl1=}")
     pl2 = p2.split()
-    #már itt átalakítom binárisra hhogy a xor muveletnél lehessen számolni
-    """ p1_szavak_bin = list(binarisra(szo) for szo in pl1)
-    p2_szavak_bin = list(binarisra(szo) for szo in pl2) """
-    #print(p1_szavak_bin)
-    #print(p2_szavak_bin)
+    print(f"{pl2=}")
     
     p1_kitalalt = ""
     p2_kitalalt = ""
-    talalat = False
-    
+    talalat_uzenet = 0 
     kulcs = ""
 
-    while not talalat:
+    while True:
         test = input("Találja ki az üzenet egy részletét: ")
-        #test_bin = binarisra(test)
+        if test in pl1:
+            talalat_uzenet = 1
+            p1_kitalalt = test
+            print(f"A szó részlet ({test}) az első üzenetben található")
+            break
+        if test in pl2:
+            talalat_uzenet = 2
+            p2_kitalalt = test
+            print(f"A szó részlet ({test}) a második üzenetben található")
+            break
+        if test not in pl1 and test not in pl2:
+            print(f"A szó egyik üzenetben sem található. ")
 
-        """ for reszlet1,reszlet2 in zip(p1_szavak_bin,p2_szavak_bin):
-            if test_bin == reszlet1:
-                print(f"Első üzenet részlete: {test}")
-                talalat = True
-                p1_kitalalt = test
-            if test_bin == reszlet2:
-                print(f"Második üzenet részlete: {test}")
-                talalat = True   
-                p2_kitalalt = test
+    #A titkosított üzeneteket levágom ugyan olyan hosszúra mint az erediket
+    if talalat_uzenet == 1:
+        c1_reszlet = c1[:len(p1_kitalalt)]
+    if talalat_uzenet == 2:
+        c2_reszlet = c2[:len(p2_kitalalt)]
+
+    #Kigyűjtöm a kitalált üzenet részletéhez rendelt számokat
+    if talalat_uzenet == 1:
+        p1_kitalalt_szam = [betu_szamra.get(p1, 0) for p1 in p1_kitalalt]  
+        c1_reszlet_szam = [betu_szamra.get(c1, 0) for c1 in c1_reszlet]
+                        
+    if talalat_uzenet == 2:
+        p2_kitalalt_szam = [betu_szamra.get(p2, 0) for p2 in p2_kitalalt]
+        c2_reszlet_szam = [betu_szamra.get(c2,0) for c2 in c2_reszlet ]
+                    
+    #Kitalálom a kulcs részletet
+    kulcs_reszlet_szamok = []  
+    lista_hossza = len(index)
+    if talalat_uzenet == 1:
+        for c1, p1 in zip(c1_reszlet_szam, p1_kitalalt_szam):
+            kulcs_reszlet_szam = (c1-p1 + lista_hossza) % lista_hossza
+            kulcs_reszlet_szamok.append(kulcs_reszlet_szam)
+
+    if talalat_uzenet == 2:
+        for c2, p2 in zip(c2_reszlet_szam, p2_kitalalt_szam):
+            kulcs_reszlet_szam = (c2-p2 + lista_hossza) % lista_hossza
+            kulcs_reszlet_szamok.append(kulcs_reszlet_szam)
+   
+    kulcs_reszlet = "".join(szam_beture.get(k, 0) for k in kulcs_reszlet_szamok)
     
-    print(f"kitalalt: {p1_kitalalt}")
-    p1_kitalalt_bin = binarisra(p1_kitalalt)
-    print(f"kitalalt_bin: {len(p1_kitalalt_bin)}")
-    c1_bin = binarisra(c1)
-    print(len(c1_bin))
-    c1_bin_len_as_p1 = c1_bin[:len(p1_kitalalt_bin)] """
-    """ 
-    for c1,p1 in zip(c1_bin_len_as_p1,p1_kitalalt_bin):
-        if c1 == p1 or p1 == c1:
-            kulcs += '0'
-        if c1 != p1 or p1 != c1:
-            kulcs += '1' """
-
-    
-    return kulcs
-#print(dekod2(uzenet1,uzenet2,rejt_uzenet1,rejt_uzenet2))
-
-
-#kulcs(rész) = titkositott1(resz) + eredeti1(resz)
+    return kulcs_reszlet
+print(dekod2(uzenet1,uzenet2,rejt_uzenet1,rejt_uzenet2))
