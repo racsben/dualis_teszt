@@ -1,4 +1,4 @@
-from main import kodolas,dekodolas,abc,index, uzenet,kulcs 
+from main import kodolas, dekodolas,dekod2, abc, index, uzenet, kulcs 
 import pytest
 
 # az üzenet az angol abc szerinti kisbetűkből (a-z) és szóközből (' ') állhat
@@ -38,24 +38,18 @@ def test_kodolas():
         for betu,szam in zip(abc,index):
             if k == szam:
                 kodolt += betu
-
-    for u, k in zip(uzenet_szam, kulcs_szam):
-        for szam in kodolt_szam:
-            assert szam == u+k
-    
-
-        
+       
+def test_kodolas_szokozzel():
+    uzenet = "hello world"
+    kulcs = "abcdefgijkl"
+    rejtett = "hfnosebw vo"
+    assert kodolas(uzenet, kulcs) == rejtett
 
 # ha a kulcs hosszabb mint az üzenet, akkor a rejtjeles üzenet hossza az üzenet hossza lesz
-def test_kodolas():
+def test_kodola_hossz_ellenorzes():
     if len(kulcs) > len(uzenet):
         assert len(kodolt) == len(uzenet)
 
-def test_kodolas():
-    uzenet = "helloworld"
-    kulcs = "abcdefgijkl"
-    rejtett = "hfnosauzun"
-    assert kodolas(uzenet, kulcs) == rejtett
 
 def test_dekodolas():
     kod = "hfnosauzun"
@@ -63,4 +57,4 @@ def test_dekodolas():
     kulcs = "abcdefgijk"
     kulcs1 = "abcdefgijkl"
     if len(kod) == len(uzenet):
-        assert dekodolas(kod,uzenet) == kulcs
+        assert dekodolas(kod,kulcs) == uzenet
