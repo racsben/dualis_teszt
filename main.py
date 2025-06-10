@@ -113,59 +113,108 @@ p2_szavak = []
 def dekod2(p1,p2,c1,c2):
     #brute-force/találgatás
     pl1 = p1.split()
-    print(f"{pl1=}")
+    #print(f"{pl1=}")
     pl2 = p2.split()
-    print(f"{pl2=}")
+    #print(f"{pl2=}")
     
     p1_kitalalt = ""
     p2_kitalalt = ""
+    p1_uzenet = []
+    p2_uzenet = []
     talalat_uzenet = 0 
-    kulcs = ""
+    if talalat_uzenet == 1:
+        kulcs = dekod_p1()
+    if talalat_uzenet == 2:
+        kulcs = dekod_p2()
+    kulcs_reszlet_szamok = []  
+    lista_hossza = len(index)
 
     while True:
         test = input("Találja ki az üzenet egy részletét: ")
+
         if test in pl1:
             talalat_uzenet = 1
             p1_kitalalt = test
             print(f"A szó részlet ({test}) az első üzenetben található")
             break
+
         if test in pl2:
             talalat_uzenet = 2
             p2_kitalalt = test
             print(f"A szó részlet ({test}) a második üzenetben található")
             break
+
         if test not in pl1 and test not in pl2:
             print(f"A szó egyik üzenetben sem található. ")
-
-    #A titkosított üzeneteket levágom ugyan olyan hosszúra mint az erediket
     if talalat_uzenet == 1:
-        c1_reszlet = c1[:len(p1_kitalalt)]
-    if talalat_uzenet == 2:
-        c2_reszlet = c2[:len(p2_kitalalt)]
+        def dekod_p1():
+            #A titkosított üzeneteket levágom ugyan olyan hosszúra mint az erediket
+            c1_reszlet = c1[:len(p1_kitalalt)]
+            
+            #Kigyűjtöm a kitalált üzenet részletéhez rendelt számokat
+            p1_kitalalt_szam = [betu_szamra.get(p1, 0) for p1 in p1_kitalalt]  
+            c1_reszlet_szam = [betu_szamra.get(c1, 0) for c1 in c1_reszlet]
 
-    #Kigyűjtöm a kitalált üzenet részletéhez rendelt számokat
-    if talalat_uzenet == 1:
-        p1_kitalalt_szam = [betu_szamra.get(p1, 0) for p1 in p1_kitalalt]  
-        c1_reszlet_szam = [betu_szamra.get(c1, 0) for c1 in c1_reszlet]
-                        
-    if talalat_uzenet == 2:
-        p2_kitalalt_szam = [betu_szamra.get(p2, 0) for p2 in p2_kitalalt]
-        c2_reszlet_szam = [betu_szamra.get(c2,0) for c2 in c2_reszlet ]
-                    
-    #Kitalálom a kulcs részletet
-    kulcs_reszlet_szamok = []  
-    lista_hossza = len(index)
-    if talalat_uzenet == 1:
-        for c1, p1 in zip(c1_reszlet_szam, p1_kitalalt_szam):
-            kulcs_reszlet_szam = (c1-p1 + lista_hossza) % lista_hossza
-            kulcs_reszlet_szamok.append(kulcs_reszlet_szam)
+            #Kitalálom a kulcs részletet
+            for c1, p1 in zip(c1_reszlet_szam, p1_kitalalt_szam):
+                kulcs_reszlet_szam = (c1-p1 + lista_hossza) % lista_hossza
+                kulcs_reszlet_szamok.append(kulcs_reszlet_szam)
+                
+            #Átalakítom a kulcs részlet számait betűkre
+            kulcs_reszlet = "".join(szam_beture.get(k, 0) for k in kulcs_reszlet_szamok)
+            
 
-    if talalat_uzenet == 2:
-        for c2, p2 in zip(c2_reszlet_szam, p2_kitalalt_szam):
-            kulcs_reszlet_szam = (c2-p2 + lista_hossza) % lista_hossza
-            kulcs_reszlet_szamok.append(kulcs_reszlet_szam)
-   
-    kulcs_reszlet = "".join(szam_beture.get(k, 0) for k in kulcs_reszlet_szamok)
+            #visszafejtem p2-őt
+            c2_reszlet = c2[:len(kulcs)]
+            c2_reszlet_szam = [betu_szamra.get(c2,0) for c2 in c2_reszlet ]
+            p2_reszlet_szamok = []
+
+            for k, c2 in zip(kulcs_reszlet_szamok, c2_reszlet_szam):
+                p2_reszlet_szam = (c2 - k + lista_hossza) % lista_hossza
+                p2_reszlet_szamok.append(p2_reszlet_szam)
+
+            p2_reszlet = "".join(szam_beture.get( num, "?") for num in p2_reszlet_szamok)
+            p2_uzenet.append(p2_reszlet)
+
+            return kulcs_reszlet
+
+    if talalat_uzenet == 2: 
+        def dekod_p2():
+            #A titkosított üzeneteket levágom ugyan olyan hosszúra mint az erediket   
+            c2_reszlet = c2[:len(p2_kitalalt)]
+
+            #Kigyűjtöm a kitalált üzenet részletéhez rendelt számokat
+            p2_kitalalt_szam = [betu_szamra.get(p2, 0) for p2 in p2_kitalalt]
+            c2_reszlet_szam = [betu_szamra.get(c2,0) for c2 in c2_reszlet ]
+
+            #Kitalálom a kulcs részletet      
+            for c2, p2 in zip(c2_reszlet_szam, p2_kitalalt_szam):
+                kulcs_reszlet_szam = (c2-p2 + lista_hossza) % lista_hossza
+                kulcs_reszlet_szamok.append(kulcs_reszlet_szam)
+
+            #Átalakítom a kulcs részlet számait betűkre
+            kulcs_reszlet = "".join(szam_beture.get(k, 0) for k in kulcs_reszlet_szamok)
+            
+
+            #Visszafejtem p1-et
+            c1_reszlet = c1[:len(kulcs)]
+            c1_reszlet_szam = [betu_szamra.get(c1,0) for c1 in c1_reszlet ]
+            p1_reszlet_szamok = []
+
+            for k, c1 in zip(kulcs_reszlet_szamok, c1_reszlet_szam):
+                p1_reszlet_szam = (c1 - k + lista_hossza) % lista_hossza
+                p1_reszlet_szamok.append(p1_reszlet_szam)
+
+            p1_reszlet = "".join(szam_beture.get( num, "?") for num in p1_reszlet_szamok)
+            p1_uzenet.append(p1_reszlet)
+            return kulcs_reszlet
+        
+    dekod_p2()
+    if kulcs:
+        while len(''.join(p1_uzenet)) != len(p1):
+            print(" ".join(p1_uzenet))
+            tipp = input("Találja ki az üzenet egy további részletét:")
+            p1_kitalalt = tipp
+    return ' '.join(p1_uzenet)
     
-    return kulcs_reszlet
 print(dekod2(uzenet1,uzenet2,rejt_uzenet1,rejt_uzenet2))
