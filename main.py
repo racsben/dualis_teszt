@@ -88,128 +88,122 @@ print(f"{uzenet2=}")
 length = len(uzenet1)
 kulcs2 = ''.join(random.choices(abc , k=length))
 print(f"{kulcs2=}")
+
 #Kódolom az üzeneteket
 rejt_uzenet1 = kodolas(uzenet1,kulcs2)
 rejt_uzenet2 = kodolas(uzenet2,kulcs2)
-#print(f"{rejt_uzenet1=}")
-#print(f"{rejt_uzenet2=}")
+print(f"{rejt_uzenet1=}")
+print(f"{rejt_uzenet2=}")
 
 p1_szavak = []
 p2_szavak = []
 
-def dekod2(p1,p2,c1,c2):
+def dekod2(c1,c2):
     #brute-force/találgatás
-    pl1 = p1.split()
-    #print(f"{pl1=}")
-    pl2 = p2.split()
-    #print(f"{pl2=}")
+    
     
     p1_uzenet = []
     p2_uzenet = []
-    kulcs = ""
+    kulcs = []
     kulcs_reszlet_szamok = []  
     kulcs_karakterek = ["?"] * max(len(c1), len(c2))
     kulcs = "".join(kulcs_karakterek)
     lista_hossza = len(index)
 
 
-    while  "?" in kulcs:
-        kulcs_reszlet_szamok = []
-        p1_kitalalt = ""
-        p2_kitalalt = ""
+    while  "?" in kulcs_karakterek:
+        
+        p_felteteles = ""
+        
         talalat_uzenet = 0 
-        test = input("Találja ki az üzenet egy részletét: ").lower()
-        
-        while True:
+        try:
+            melyik = int(input("Melyik üzenetben szeretne találgatni?: (1-es: első üzenet/2-es: második üzenet) "))
+        except ValueError:
+            print("1-est vagy 2-est adj meg!")
+            continue
 
-            if test in p1:
-                talalat_uzenet = 1
-                p1_kitalalt = test
-                if test not in p1_uzenet:
-                    p1_uzenet.append(test)
-                print(f"A szó részlet ({test}) az első üzenetben található")
-                break
-
-            elif test in p2:
-                talalat_uzenet = 2
-                p2_kitalalt = test
-                if test not in p2_uzenet:
-                    p2_uzenet.append(test)
-                print(f"A szó részlet ({test}) a második üzenetben található")
-                break
-
-            else:
-                print(f"A szó egyik üzenetben sem található. ")
-                break
-        
-        if talalat_uzenet == 1:
-            #A titkosított üzeneteket levágom ugyan olyan hosszúra mint az erediket
-            c1_reszlet = c1[:len(p1_kitalalt)]
-            
+        #elso uzenet
+        kulcs_reszlet_szamok = []
+        if melyik == 1:     
+            test = input("Találja ki az üzenet egy részletét: ").lower().strip()
+            p_felteteles = test
+            kulcs_reszlet_szamok = []
+            #A titkosított üzeneteket levágom ugyan olyan hosszúra mint az eredit
+            c1_reszlet = c1[:len(p_felteteles)]
+                
             #Kigyűjtöm a kitalált üzenet részletéhez rendelt számokat
-            p1_kitalalt_szam = [betu_szamra.get(p1_szam, 0) for p1_szam in p1_kitalalt]  
+            p1_kitalalt_szam = [betu_szamra.get(p1_szam, 0) for p1_szam in p_felteteles]  
             c1_reszlet_szam = [betu_szamra.get(c1_szam, 0) for c1_szam in c1_reszlet]
 
             #Kitalálom a kulcs részletet
             for c1_szam, p1_szam in zip(c1_reszlet_szam, p1_kitalalt_szam):
                 kulcs_reszlet_szam = (c1_szam-p1_szam + lista_hossza) % lista_hossza
                 kulcs_reszlet_szamok.append(kulcs_reszlet_szam)
-                    
-            #Átalakítom a kulcs részlet számait betűkre
-            kulcs_reszlet = "".join(szam_beture.get(k, "?") for k in kulcs_reszlet_szamok)
-            #print(f"{kulcs_reszlet=}, {type(kulcs_reszlet)}")
-            
-            kulcs += kulcs_reszlet   
-            #print(f"{kulcs=}, {type(kulcs)}")
             
             #visszafejtem p2-őt
-            c2_reszlet = c2[:len(kulcs)]
+            c2_reszlet = c2[:len( kulcs)]
             c2_reszlet_szam = [betu_szamra.get(c2_szam, 0) for c2_szam in c2_reszlet ]
             p2_reszlet_szamok = []
 
-            for k_szam, c2_szam in zip(kulcs_reszlet_szamok, c2_reszlet_szam):
-                p2_reszlet_szam = (c2_szam - k_szam + lista_hossza) % lista_hossza
-                p2_reszlet_szamok.append(p2_reszlet_szam)
+            for i, k_char in enumerate(kulcs_karakterek):
+                if i < len(c2) and k_char != "?":
+                    k_num = betu_szamra.get(k_char,0)
+                    p2_szam = (c2_reszlet_szam[i] - k_szam + lista_hossza) % lista_hossza
+                    p2_reszlet_szamok.append(p2_szam)
+                elif i < len(c2):
+                    p2_reszlet_szamok.append(-1)
 
-            p2_reszlet = "".join(szam_beture.get( num, "?") for num in p2_reszlet_szamok)
-            p2_uzenet.append(p2_reszlet)
+            p2_uzenet_str = "".join(szam_beture.get( num, "?") for num in p2_reszlet_szamok if num != -1)
+            p2_uzenet.append(p2_uzenet_str)
+            print(f"{p2_uzenet=}")
 
+        #masodik uzenet
 
-        elif talalat_uzenet == 2: 
+        if melyik == 2:
+            test = input("Találja ki az üzenet egy részletét: ").lower().strip()
+            p_felteteles = test
             #A titkosított üzeneteket levágom ugyan olyan hosszúra mint az erediket   
-            c2_reszlet = c2[:len(p2_kitalalt)]
+            c2_reszlet = c2[:len(p_felteteles)]
 
             #Kigyűjtöm a kitalált üzenet részletéhez rendelt számokat
-            p2_kitalalt_szam = [betu_szamra.get(p2_szam, 0) for p2_szam in p2_kitalalt]
+            p2_kitalalt_szam = [betu_szamra.get(p2_szam, 0) for p2_szam in p_felteteles]
             c2_reszlet_szam = [betu_szamra.get(c2_szam, 0) for c2_szam in c2_reszlet ]
 
-            #Kitalálom a kulcs részletet      
-            for c2_szam, p2_szam in zip(c2_reszlet_szam, p2_kitalalt_szam):
-                kulcs_reszlet_szam = (c2_szam-p2_szam + lista_hossza) % lista_hossza
+            #Kitalálom a kulcs részletet
+            for c1_szam, p1_szam in zip(c2_reszlet_szam, p2_kitalalt_szam):
+                kulcs_reszlet_szam = (c1_szam-p1_szam + lista_hossza) % lista_hossza
                 kulcs_reszlet_szamok.append(kulcs_reszlet_szam)
 
-            #Átalakítom a kulcs részlet számait betűkre
-            kulcs_reszlet = "".join(szam_beture.get(k_szam, "?") for k_szam in kulcs_reszlet_szamok)
-            #print(f"{kulcs_reszlet=}, {type(kulcs_reszlet)}")
-            kulcs += kulcs_reszlet
-            #print(f"{kulcs=}, {type(kulcs)}")
-            
             #Visszafejtem p1-et
             c1_reszlet = c1[:len(kulcs)]
-            c1_reszlet_szam = [betu_szamra.get(c1_szam, 0) for c1_szam in c1_reszlet ]
+            c1_reszlet_szam = [betu_szamra.get(char, 0) for char in c1_reszlet ]
             p1_reszlet_szamok = []
 
-            for k_szam, c1_szam in zip(kulcs_reszlet_szamok, c1_reszlet_szam):
-                p1_reszlet_szam = (c1_szam - k_szam + lista_hossza) % lista_hossza
-                p1_reszlet_szamok.append(p1_reszlet_szam)
+            for i, k_kar in enumerate(kulcs_karakterek):
+                if i < len(c1) and k_kar != "?":
+                    k_szam = betu_szamra.get(k_kar, 0)
+                    p1_szam = (c1_reszlet_szam[i] - k_szam + lista_hossza) % lista_hossza
+                    p1_reszlet_szamok.append(p1_szam)
+                elif i < len(c1):
+                    p1_reszlet_szamok.append(-1)
+            
+        
+            p1_uzenet_str = "".join(szam_beture.get( num, "?") for num in p1_reszlet_szamok if num != -1)
+            p1_uzenet.append(p1_uzenet_str)
+            print(f"{p1_uzenet=}")
+        
 
-            p1_reszlet = "".join(szam_beture.get( num, "?") for num in p1_reszlet_szamok)
-            p1_uzenet.append(p1_reszlet)
+        #kulcs
+        for i, num in enumerate(kulcs_reszlet_szamok):
+            if i < max(len(c1), len(c2)):
+                kar = kulcs_karakterek[i]
+                uj_kar = szam_beture.get(num, "?")
+                if kar == "?" or uj_kar != "?":
+                    kulcs_karakterek[i] = uj_kar
 
-        print(f"{kulcs=}")
-        print(f"{p1_uzenet=}")
-        print(f"{p2_uzenet=}")
+        kulcs = "".join(kulcs_karakterek)
 
-    return kulcs
+        
+        return kulcs
 
-print(dekod2(uzenet1,uzenet2,rejt_uzenet1,rejt_uzenet2))
+print(dekod2(rejt_uzenet1,rejt_uzenet2))
