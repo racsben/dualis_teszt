@@ -53,12 +53,13 @@ print(f"{uzenet2=}")
 
 
 #----------Kulcs generálása-----------------
-length = len(uzenet1)
+length = min(len(uzenet1),len(uzenet2))
 kulcs2 = ''.join(random.choices(abc , k=length))
 print(f"{kulcs2=}")
 #Kódolom az üzeneteket
 rejt_uzenet1 = kodolas(uzenet1,kulcs2)
 rejt_uzenet2 = kodolas(uzenet2,kulcs2)
-
+print(f"{rejt_uzenet1=}")
+print(f"{rejt_uzenet2=}")
 def test_dekod2():
     assert dekod2(rejt_uzenet1,rejt_uzenet2) == kulcs2

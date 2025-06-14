@@ -64,6 +64,8 @@ def dekod2(c1,c2):
     
     lista_hossza = len(index)
     
+    c1_levagott = c1
+    c2_levagott = c2
     c1_kuka = ""
     c2_kuka = ""
 
@@ -88,7 +90,7 @@ def dekod2(c1,c2):
             p_felteteles = test
 
             #A titkosított üzeneteket levágom ugyan olyan hosszúra mint a kitaláltat
-            c1_reszlet = c1[:len(p_felteteles)]
+            c1_reszlet = c1_levagott[:len(p_felteteles)]
                 
             #Kigyűjtöm a kitalált üzenet részletéhez rendelt számokat
             p1_kitalalt_szam = [betu_szamra.get(p1_szam, 0) for p1_szam in p_felteteles]  
@@ -132,15 +134,26 @@ def dekod2(c1,c2):
             #kezeljük a valódiságát a szövegnek
             ertelmes = input("Elégedett vagy az üzenet szövegével? (nem/igen) ").lower()
             if ertelmes == "igen":
-                c1 = c1[len(p_felteteles):]
-                print(f"{c1=}")
+                c1_levagott = c1[len(p_felteteles):]
+                print(f"{c1_levagott=}")
                 c1_kuka += c1_reszlet
 
-                c2 = c2[len(p2_reszlet):]
-                print(f"{c2=}")
+                c2_levagott = c2[len(p2_reszlet):]
+                print(f"{c2_levagott=}")
                 c2_kuka += c2_reszlet
                 continue
+
             if ertelmes == "nem":
+                c1_kuka= ""
+                print(f"{c1_kuka}")
+                c1_levagott = c1
+                print(f"{c1_levagott}")
+
+                c2_kuka = ""
+                print(f"{c2_kuka}")
+                c2_levagott = c2
+                print(f"{c2_levagott}")
+                
                 p_felteteles = ""
                 p2_uzenet = []
                 kulcs = []
@@ -155,7 +168,7 @@ def dekod2(c1,c2):
             test = input("Találja ki az üzenet egy részletét: ").lower()
             p_felteteles = test
             #A titkosított üzeneteket levágom ugyan olyan hosszúra mint az erediket   
-            c2_reszlet = c2[:len(p_felteteles)]
+            c2_reszlet = c2_levagott[:len(p_felteteles)]
 
             #Kigyűjtöm a kitalált üzenet részletéhez rendelt számokat
             p2_kitalalt_szam = [betu_szamra.get(p2_szam, 0) for p2_szam in p_felteteles]
@@ -196,14 +209,24 @@ def dekod2(c1,c2):
             #kezeljük a valódiságát a szövegnek
             ertelmes = input("Elégedett vagy az üzenet szövegével? (nem/igen) ").lower()
             if ertelmes == "igen":
-                c2 = c2[len(p_felteteles):]
-                print(f"{c2=}")
+                c2_levagott = c2[len(p_felteteles):]
+                print(f"{c2_levagott=}")
                 c2_kuka += c2_reszlet
 
-                c1 = c1[len(p_felteteles):]
+                c1_levagott = c1[len(p_felteteles):]
+                print(f"{c1_levagott}")
                 c1_kuka += c1_reszlet
                 continue
+
             if ertelmes == "nem":
+                c2_levagott = c2
+                print(f"{c2_levagott=}")
+                c2_kuka =""
+
+                c1_levagott = c1
+                print(f"{c1_levagott=}")
+                c1_kuka = "" 
+                
                 p_felteteles = ""
                 p1_uzenet = []
                 kulcs = []
