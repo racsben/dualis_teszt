@@ -68,7 +68,7 @@ def dekod2(c1,c2):
     c1_kuka = ""
     c2_kuka = ""
 
-    while  len(kulcs) <= min(len(c1),len(c2)):
+    while  len(kulcs) != min(len(c1),len(c2)):
         
         p_felteteles = ""
 
@@ -80,9 +80,9 @@ def dekod2(c1,c2):
         
         #elso uzenet
         kulcs_reszlet_szamok = []
-        print(f"{kulcs_reszlet_szamok=}")
+        #print(f"{kulcs_reszlet_szamok=}")
         if melyik == 1:  
-            print(f"{c1_levagott=}")
+            #print(f"{c1_levagott=}")
             test = input("Találja ki az üzenet egy részletét: ").lower()
             p_felteteles = test
 
@@ -105,7 +105,7 @@ def dekod2(c1,c2):
             
             #visszafejtem p2-őt
             c2_reszlet = c2_levagott[:len(p_felteteles)]
-            print(f"{c2_reszlet=}")
+            #print(f"{c2_reszlet=}")
             c2_reszlet_szam = [betu_szamra.get(num2, 0) for num2 in c2_reszlet ]
             
             p2_reszlet_szamok = []
@@ -124,42 +124,41 @@ def dekod2(c1,c2):
             ertelmes = input("Elégedett vagy az üzenet szövegével? (nem/igen) ").lower()
             if ertelmes == "igen":
                 c1_levagott = c1_levagott[len(c1_reszlet):]
-                print(f"{c1_levagott=}")
+                #print(f"{c1_levagott=}")
                 c1_kuka += c1_reszlet
 
                 c2_levagott = c2_levagott[len(c2_reszlet):]
-                print(f"{c2_levagott=}")
+                #print(f"{c2_levagott=}")
                 c2_kuka += c2_reszlet
                 continue
 
             if ertelmes == "nem":
                 c1_kuka= ""
-                print(f"{c1_kuka=}")
+                #print(f"{c1_kuka=}")
                 c1_levagott = c1
-                print(f"{c1_levagott=}")
+                #print(f"{c1_levagott=}")
 
                 c2_kuka = ""
-                print(f"{c2_kuka=}")
+                #print(f"{c2_kuka=}")
                 c2_levagott = c2
-                print(f"{c2_levagott=}")
+                #print(f"{c2_levagott=}")
                 
                 p_felteteles = ""
                 p2_uzenet = []
-                kulcs = []
+                kulcs = ""
                 kulcs_reszlet_szamok = []  
-                kulcs_karakterek = ["?"] * max(len(c1), len(c2))
-                kulcs = "".join(kulcs_karakterek)
                 continue
         
         
         #masodik uzenet
         if melyik == 2:
-            print(f"{c2_levagott=}")
+            #print(f"{c2_levagott=}")
             test = input("Találja ki az üzenet egy részletét: ").lower()
             p_felteteles = test
             #A titkosított üzeneteket levágom ugyan olyan hosszúra mint az erediket   
             c2_reszlet = c2_levagott[:len(p_felteteles)]
-            print(f"{c2_reszlet=}")
+            #print(f"{c2_reszlet=}")
+            
             #Kigyűjtöm a kitalált üzenet részletéhez rendelt számokat
             p2_kitalalt_szam = [betu_szamra.get(p2_szam, 0) for p2_szam in p_felteteles]
             c2_reszlet_szam = [betu_szamra.get(c2_szam, 0) for c2_szam in c2_reszlet ]
@@ -169,14 +168,14 @@ def dekod2(c1,c2):
             for c2_szam, p2_szam in zip(c2_reszlet_szam, p2_kitalalt_szam):
                 kulcs_reszlet_szam = (c2_szam-p2_szam + lista_hossza) % lista_hossza
                 kulcs_reszlet_szamok.append(kulcs_reszlet_szam)
-            print(f"{kulcs_reszlet_szamok=}")
+            #print(f"{kulcs_reszlet_szamok=}")
 
             #Átalakítom a kulcs részlet számait betűkre
             kulcs += "".join(szam_beture.get(k,"?")for k in kulcs_reszlet_szamok)
                 
             #Visszafejtem p1-et
             c1_reszlet = c1_levagott[:len(p_felteteles)]
-            print(f"{c1_reszlet=}")
+            #print(f"{c1_reszlet=}")
             c1_reszlet_szam = [betu_szamra.get(num1, 0) for num1 in c1_reszlet ]
             
             p1_reszlet_szamok = []
@@ -194,31 +193,29 @@ def dekod2(c1,c2):
             ertelmes = input("Elégedett vagy az üzenet szövegével? (nem/igen) ").lower()
             if ertelmes == "igen":
                 c2_levagott = c2_levagott[len(c2_reszlet):]
-                print(f"{c2_levagott=}")
+                #print(f"{c2_levagott=}")
                 c2_kuka += c2_reszlet
 
                 c1_levagott = c1_levagott[len(c1_reszlet):]
-                print(f"{c1_levagott=}")
+                #print(f"{c1_levagott=}")
                 c1_kuka += c1_reszlet
                 continue
 
             if ertelmes == "nem":
                 c2_kuka = ""
-                print(f"{c2_kuka=}")
+                #print(f"{c2_kuka=}")
                 c2_levagott = c2
-                print(f"{c2_levagott=}")
+                #print(f"{c2_levagott=}")
 
                 c1_kuka = ""
-                print(f"{c1_kuka=}") 
+                #print(f"{c1_kuka=}") 
                 c1_levagott = c1
-                print(f"{c1_levagott=}")
+                #print(f"{c1_levagott=}")
                 
                 p_felteteles = ""
                 p1_uzenet = []
-                kulcs = []
+                kulcs = ""
                 kulcs_reszlet_szamok = []  
-                kulcs_karakterek = ["?"] * max(len(c1), len(c2))
-                kulcs = "".join(kulcs_karakterek)
                 continue
 
     return kulcs     
