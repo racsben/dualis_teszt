@@ -4,17 +4,18 @@ import os
 abc = ["a","b","c","d","e","f","g","h","i","j","k","l","m","n","o","p","q","r","s","t","u","v","w","x","y","z", " "]
 index=[ 0 , 1 , 2 ,  3,  4,  5,  6,  7,  8,  9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26]
 
+# Betűk-számra, Számok-betűre váltásának kezelése
 betu_szamra = {betu: szam for betu, szam in zip(abc,index)}
 szam_beture = {szam: betu for betu, szam in zip(abc,index)}
 
 def kodolas(uzenet, kulcs):
     
-    #kigyűjtöm a bekért adatok karaktereihez rendelt számot
+    # Kigyűjtöm a bekért adatok karaktereihez rendelt számot
     uzenet_szam = [betu_szamra.get(u, 0) for u in uzenet] 
     kulcs_szam = [betu_szamra.get(k, 0)for k in kulcs]
 
-    #kód kialakítása
-    kodolt = "" #hfnosauzun 
+    # Kódolt üzenet kialakítása
+    kodolt = ""  
     kodolt_szam = [] 
     lista_hossza = len(index)
     for u, k in zip(uzenet_szam, kulcs_szam):
@@ -29,13 +30,13 @@ def kodolas(uzenet, kulcs):
     return kodolt
 #DEKÓDOLÁS
 
-def dekodolas(kodolt,kulcs):
+def dekodolas(kodolt,kulcs): # 2 stringet kér be és stringet ad vissza
     
-    #kigyűjtöm a bekért adatok karaktereihez rendelt számot
+    # Kigyűjtöm a bekért adatok karaktereihez rendelt számot
     kodolt_szam = [betu_szamra.get(u, 0)for u in kodolt]
     kulcs_szam = [betu_szamra.get(k, 0)for k in kulcs]
 
-    #dekódolás
+    # Dekódolás
     uzenet_szam = []   
     lista_hossza = len(index)
     for u, k in zip(kodolt_szam, kulcs_szam):
@@ -52,23 +53,31 @@ def dekodolas(kodolt,kulcs):
 
 #2
 
-def dekod2(c1,c2):
-    #brute-force/találgatás
+def dekod2(c1: str,c2: str) -> str: # 2 stringet kér be és stringet ad vissza
+    
+    # Kitalált üzenet részek ide kerülnek
     p1_uzenet = []
     p2_uzenet = []
     
+    # Kulcshoz tartozó értékek ide kerülnek
     kulcs = []
     kulcs_reszlet_szamok = []  
     kulcs = ""
     
     lista_hossza = len(index)
     
+    # Változók, stringek könnyebb kezelése érdekében
     c1_levagott = c1
     c2_levagott = c2
     c1_kuka = ""
     c2_kuka = ""
 
+    if len(kulcs) == min(len(c1),len(c2)):
+            print(kulcs)
+    
+    # Találgatás
     while  len(kulcs) != min(len(c1),len(c2)):
+        
         
         p_felteteles = ""
 
@@ -78,34 +87,32 @@ def dekod2(c1,c2):
             print("1-est vagy 2-est adjon meg!")
             continue
         
-        #elso uzenet
+        # Első üzenet
         kulcs_reszlet_szamok = []
-        #print(f"{kulcs_reszlet_szamok=}")
+
         if melyik == 1:  
-            #print(f"{c1_levagott=}")
+            
             test = input("Találja ki az üzenet egy részletét: ").lower()
             p_felteteles = test
 
-            #A titkosított üzeneteket levágom ugyan olyan hosszúra mint a kitaláltat
+            # A titkosított üzeneteket levágom ugyanolyan hosszúra mint a kitaláltat
             c1_reszlet = c1_levagott[:len(p_felteteles)]
                 
-            #Kigyűjtöm a kitalált üzenet részletéhez rendelt számokat
+            # Kigyűjtöm a kitalált üzenet részletéhez rendelt számokat
             p1_kitalalt_szam = [betu_szamra.get(p1_szam, 0) for p1_szam in p_felteteles]  
             c1_reszlet_szam = [betu_szamra.get(c1_szam, 0) for c1_szam in c1_reszlet]
             
             
-            #Kitalálom a kulcs részletet
+            # Kitalálom a kulcs részletet
             for c1_szam, p1_szam in zip(c1_reszlet_szam, p1_kitalalt_szam):
                 kulcs_reszlet_szam = (c1_szam-p1_szam + lista_hossza) % lista_hossza
                 kulcs_reszlet_szamok.append(kulcs_reszlet_szam)
 
-            #Átalakítom a kulcs részlet számait betűkre
+            # Átalakítom a kulcs részlet számait betűkre
             kulcs += "".join(szam_beture.get(k,"?")for k in kulcs_reszlet_szamok)
-            #print(f"{kulcs_reszlet=}, {type(kulcs_reszlet)}")
             
-            #visszafejtem p2-őt
+            # Visszafejtem p2-őt
             c2_reszlet = c2_levagott[:len(p_felteteles)]
-            #print(f"{c2_reszlet=}")
             c2_reszlet_szam = [betu_szamra.get(num2, 0) for num2 in c2_reszlet ]
             
             p2_reszlet_szamok = []
@@ -118,30 +125,23 @@ def dekod2(c1,c2):
             p2_uzenet.append(p2_reszlet)
             
             print(f"{p2_uzenet=}")
-            print(f"{kulcs=}")
             
-            #kezeljük a valódiságát a szövegnek
+            # Kezeljük a valódiságát a szövegnek
             ertelmes = input("Elégedett vagy az üzenet szövegével? (nem/igen) ").lower()
             if ertelmes == "igen":
                 c1_levagott = c1_levagott[len(c1_reszlet):]
-                #print(f"{c1_levagott=}")
                 c1_kuka += c1_reszlet
 
                 c2_levagott = c2_levagott[len(c2_reszlet):]
-                #print(f"{c2_levagott=}")
                 c2_kuka += c2_reszlet
                 continue
 
             if ertelmes == "nem":
                 c1_kuka= ""
-                #print(f"{c1_kuka=}")
                 c1_levagott = c1
-                #print(f"{c1_levagott=}")
 
                 c2_kuka = ""
-                #print(f"{c2_kuka=}")
                 c2_levagott = c2
-                #print(f"{c2_levagott=}")
                 
                 p_felteteles = ""
                 p2_uzenet = []
@@ -150,32 +150,29 @@ def dekod2(c1,c2):
                 continue
         
         
-        #masodik uzenet
+        # Második üzenet
         if melyik == 2:
-            #print(f"{c2_levagott=}")
             test = input("Találja ki az üzenet egy részletét: ").lower()
             p_felteteles = test
-            #A titkosított üzeneteket levágom ugyan olyan hosszúra mint az erediket   
+
+            # A titkosított üzeneteket levágom ugyanolyan hosszúra mint az erediket   
             c2_reszlet = c2_levagott[:len(p_felteteles)]
-            #print(f"{c2_reszlet=}")
             
-            #Kigyűjtöm a kitalált üzenet részletéhez rendelt számokat
+            # Kigyűjtöm a kitalált üzenet részletéhez rendelt számokat
             p2_kitalalt_szam = [betu_szamra.get(p2_szam, 0) for p2_szam in p_felteteles]
             c2_reszlet_szam = [betu_szamra.get(c2_szam, 0) for c2_szam in c2_reszlet ]
 
             
-            #Kitalálom a kulcs részletet      
+            # Kitalálom a kulcs részletet      
             for c2_szam, p2_szam in zip(c2_reszlet_szam, p2_kitalalt_szam):
                 kulcs_reszlet_szam = (c2_szam-p2_szam + lista_hossza) % lista_hossza
                 kulcs_reszlet_szamok.append(kulcs_reszlet_szam)
-            #print(f"{kulcs_reszlet_szamok=}")
 
-            #Átalakítom a kulcs részlet számait betűkre
+            # Átalakítom a kulcs részlet számait betűkre
             kulcs += "".join(szam_beture.get(k,"?")for k in kulcs_reszlet_szamok)
                 
-            #Visszafejtem p1-et
+            # Visszafejtem p1-et
             c1_reszlet = c1_levagott[:len(p_felteteles)]
-            #print(f"{c1_reszlet=}")
             c1_reszlet_szam = [betu_szamra.get(num1, 0) for num1 in c1_reszlet ]
             
             p1_reszlet_szamok = []
@@ -189,33 +186,28 @@ def dekod2(c1,c2):
 
             print(f"{p1_uzenet=}")
             print(f"{kulcs=}")
-            #kezeljük a valódiságát a szövegnek
+
+            # Kezeljük a valódiságát a szövegnek
             ertelmes = input("Elégedett vagy az üzenet szövegével? (nem/igen) ").lower()
             if ertelmes == "igen":
                 c2_levagott = c2_levagott[len(c2_reszlet):]
-                #print(f"{c2_levagott=}")
                 c2_kuka += c2_reszlet
 
                 c1_levagott = c1_levagott[len(c1_reszlet):]
-                #print(f"{c1_levagott=}")
                 c1_kuka += c1_reszlet
                 continue
 
             if ertelmes == "nem":
                 c2_kuka = ""
-                #print(f"{c2_kuka=}")
                 c2_levagott = c2
-                #print(f"{c2_levagott=}")
 
                 c1_kuka = ""
-                #print(f"{c1_kuka=}") 
                 c1_levagott = c1
-                #print(f"{c1_levagott=}")
                 
                 p_felteteles = ""
                 p1_uzenet = []
                 kulcs = ""
                 kulcs_reszlet_szamok = []  
                 continue
-
+            
     return kulcs     

@@ -9,14 +9,10 @@ import random
     ("hello world","kvhuw vnwpds","rzsejzqam g"),
     ("helloworld","kvhuw vnwpds","rzsejvidgs") 
 ])
-# az üzenet az angol abc szerinti kisbetűkből (a-z) és szóközből (' ') állhat
-# a kulcs ugyanezeket a karaktereket tartalmazhatja
-# a kulcsnak legalább akkorának kell lennie mint az üzenetnek
 
 def test_kodolas(uzenet, kulcs, eredmeny):
     assert kodolas(uzenet,kulcs) == eredmeny
 
-# ha a kulcs hosszabb mint az üzenet, akkor a rejtjeles üzenet hossza az üzenet hossza lesz
 
 @pytest.mark.parametrize("uzenet1, kulcs1, rejtett1", [
     ("helloworld", "abcdefgijkl","hfnosauzun"),
@@ -59,8 +55,8 @@ print(f"{kulcs2=}")
 #Kódolom az üzeneteket
 rejt_uzenet1 = kodolas(uzenet1,kulcs2)
 rejt_uzenet2 = kodolas(uzenet2,kulcs2)
-print(f"{rejt_uzenet1=}")
-print(f"{rejt_uzenet2=}")
+#print(f"{rejt_uzenet1=}")
+#print(f"{rejt_uzenet2=}")
 
 def test_dekod2():
     assert dekod2(rejt_uzenet1,rejt_uzenet2) == kulcs2
