@@ -53,16 +53,19 @@ def dekodolas(kodolt,kulcs): # 2 stringet kér be és stringet ad vissza
 
 #2
 
-def dekod2(c1: str,c2: str) -> str: # 2 stringet kér be és stringet ad vissza
+mind = []
+with open("words.txt", "r", encoding="utf-8") as f:
+    for sor in f:
+        szo = sor.strip()
+        if szo:
+            mind.append(szo)
+
+def dekod2_auto(c1: str,c2: str): # 2 stringet kér be és egy listát ad vissza
     
-    # Kitalált üzenet részek ide kerülnek
-    p1_uzenet = []
-    p2_uzenet = []
-    
-    # Kulcshoz tartozó értékek ide kerülnek
-    kulcs = []
-    kulcs_reszlet_szamok = []  
-    kulcs = ""
+    kulcsok = []
+
+    p1_uzenet = ""
+    p2_uzenet = ""
     
     lista_hossza = len(index)
     
@@ -71,50 +74,37 @@ def dekod2(c1: str,c2: str) -> str: # 2 stringet kér be és stringet ad vissza
     c2_levagott = c2
     c1_kuka = ""
     c2_kuka = ""
-
-    if len(kulcs) == min(len(c1),len(c2)):
-            print(kulcs)
+        
     
-    # Találgatás
-    while  len(kulcs) != min(len(c1),len(c2)):
-        
-        
-        p_felteteles = ""
-
-        try:
-            melyik = int(input("Melyik üzenetben szeretne találgatni?: (1-es: első üzenet/2-es: második üzenet) "))
-        except ValueError:
-            print("1-est vagy 2-est adjon meg!")
-            continue
-        
-        # Első üzenet
-        kulcs_reszlet_szamok = []
-
-        if melyik == 1:  
+    p_felteteles = ""
+    kulcs_kesz = ""
+    #brute-force
+    while len(kulcs_kesz) != min(len(c1), len(c2)):
+        for szo in mind:
+            kulcs_reszlet_szamok = []
             
-            test = input("Találja ki az üzenet egy részletét: ").lower()
-            p_felteteles = test
+            p_felteteles = szo
 
             # A titkosított üzeneteket levágom ugyanolyan hosszúra mint a kitaláltat
             c1_reszlet = c1_levagott[:len(p_felteteles)]
                 
-            # Kigyűjtöm a kitalált üzenet részletéhez rendelt számokat
+            # Kigyűjtöm a feltételezett szóhoz rendelt számokat
             p1_kitalalt_szam = [betu_szamra.get(p1_szam, 0) for p1_szam in p_felteteles]  
             c1_reszlet_szam = [betu_szamra.get(c1_szam, 0) for c1_szam in c1_reszlet]
-            
-            
+                
+                
             # Kitalálom a kulcs részletet
             for c1_szam, p1_szam in zip(c1_reszlet_szam, p1_kitalalt_szam):
                 kulcs_reszlet_szam = (c1_szam-p1_szam + lista_hossza) % lista_hossza
                 kulcs_reszlet_szamok.append(kulcs_reszlet_szam)
 
             # Átalakítom a kulcs részlet számait betűkre
-            kulcs += "".join(szam_beture.get(k,"?")for k in kulcs_reszlet_szamok)
-            
+            kulcs = "".join(szam_beture.get(k,"?")for k in kulcs_reszlet_szamok)
+
             # Visszafejtem p2-őt
             c2_reszlet = c2_levagott[:len(p_felteteles)]
             c2_reszlet_szam = [betu_szamra.get(num2, 0) for num2 in c2_reszlet ]
-            
+                
             p2_reszlet_szamok = []
 
             for k_szam, c2_szam in zip(kulcs_reszlet_szamok, c2_reszlet_szam):
@@ -122,92 +112,26 @@ def dekod2(c1: str,c2: str) -> str: # 2 stringet kér be és stringet ad vissza
                 p2_reszlet_szamok.append(p2_reszlet_szam)
 
             p2_reszlet = "".join(szam_beture.get( num, "?") for num in p2_reszlet_szamok)
-            p2_uzenet.append(p2_reszlet)
             
-            print(f"{p2_uzenet=}")
-            
-            # Kezeljük a valódiságát a szövegnek
-            ertelmes = input("Elégedett vagy az üzenet szövegével? (nem/igen) ").lower()
-            if ertelmes == "igen":
+            # Kezeljük, hogy helyes-e a feltételezett szó
+            if p2_reszlet in mind:
+                p2_uzenet += p2_reszlet
+                p1_uzenet += p_felteteles
+
                 c1_levagott = c1_levagott[len(c1_reszlet):]
                 c1_kuka += c1_reszlet
 
+                kulcs_kesz += kulcs
+                
                 c2_levagott = c2_levagott[len(c2_reszlet):]
                 c2_kuka += c2_reszlet
                 continue
-
-            if ertelmes == "nem":
-                c1_kuka= ""
-                c1_levagott = c1
-
-                c2_kuka = ""
-                c2_levagott = c2
-                
-                p_felteteles = ""
-                p2_uzenet = []
-                kulcs = ""
-                kulcs_reszlet_szamok = []  
-                continue
-        
-        
-        # Második üzenet
-        if melyik == 2:
-            test = input("Találja ki az üzenet egy részletét: ").lower()
-            p_felteteles = test
-
-            # A titkosított üzeneteket levágom ugyanolyan hosszúra mint az erediket   
-            c2_reszlet = c2_levagott[:len(p_felteteles)]
             
-            # Kigyűjtöm a kitalált üzenet részletéhez rendelt számokat
-            p2_kitalalt_szam = [betu_szamra.get(p2_szam, 0) for p2_szam in p_felteteles]
-            c2_reszlet_szam = [betu_szamra.get(c2_szam, 0) for c2_szam in c2_reszlet ]
+            p2_reszlet = ""
+        if p2_reszlet not in mind:  
+            print("Nem találtam megfelelő szegmenst. A megfejtés elakadt.")
+            continue
 
-            
-            # Kitalálom a kulcs részletet      
-            for c2_szam, p2_szam in zip(c2_reszlet_szam, p2_kitalalt_szam):
-                kulcs_reszlet_szam = (c2_szam-p2_szam + lista_hossza) % lista_hossza
-                kulcs_reszlet_szamok.append(kulcs_reszlet_szam)
-
-            # Átalakítom a kulcs részlet számait betűkre
-            kulcs += "".join(szam_beture.get(k,"?")for k in kulcs_reszlet_szamok)
-                
-            # Visszafejtem p1-et
-            c1_reszlet = c1_levagott[:len(p_felteteles)]
-            c1_reszlet_szam = [betu_szamra.get(num1, 0) for num1 in c1_reszlet ]
-            
-            p1_reszlet_szamok = []
-
-            for k_szam, c1_szam in zip(kulcs_reszlet_szamok, c1_reszlet_szam):
-                p1_reszlet_szam = (c1_szam - k_szam + lista_hossza) % lista_hossza
-                p1_reszlet_szamok.append(p1_reszlet_szam)
-
-            p1_reszlet = "".join(szam_beture.get( num, "?") for num in p1_reszlet_szamok)
-            p1_uzenet.append(p1_reszlet)
-
-            print(f"{p1_uzenet=}")
-            print(f"{kulcs=}")
-
-            # Kezeljük a valódiságát a szövegnek
-            ertelmes = input("Elégedett vagy az üzenet szövegével? (nem/igen) ").lower()
-            if ertelmes == "igen":
-                c2_levagott = c2_levagott[len(c2_reszlet):]
-                c2_kuka += c2_reszlet
-
-                c1_levagott = c1_levagott[len(c1_reszlet):]
-                c1_kuka += c1_reszlet
-                continue
-
-            if ertelmes == "nem":
-                c2_kuka = ""
-                c2_levagott = c2
-
-                c1_kuka = ""
-                c1_levagott = c1
-                
-                p_felteteles = ""
-                p1_uzenet = []
-                kulcs = ""
-                kulcs_reszlet_szamok = []  
-                continue
-            
-    return kulcs     
+    print(p1_uzenet)
+    print(p2_uzenet)
+    return kulcs_kesz

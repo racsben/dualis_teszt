@@ -1,4 +1,4 @@
-from main import kodolas, dekodolas, dekod2, abc, index,  betu_szamra, szam_beture
+from main import kodolas, dekodolas, dekod2_auto, abc, index,  betu_szamra, szam_beture
 import pytest
 import random
 
@@ -58,7 +58,7 @@ rejt_uzenet2 = kodolas(uzenet2,kulcs2)
 #print(f"{rejt_uzenet1=}")
 #print(f"{rejt_uzenet2=}")
 
-def test_dekod2():
-    assert dekod2(rejt_uzenet1,rejt_uzenet2) == kulcs2
+def test_dekod2_auto():
+    assert dekod2_auto(rejt_uzenet1,rejt_uzenet2) == kulcs2
 
 
