@@ -53,85 +53,67 @@ def dekodolas(kodolt,kulcs): # 2 stringet kér be és stringet ad vissza
 
 #2
 
-mind = []
-with open("words.txt", "r", encoding="utf-8") as f:
-    for sor in f:
-        szo = sor.strip()
-        if szo:
-            mind.append(szo)
+def szotar_betoltese(fajlnev="words.txt"):
+    with open("words.txt", "r", encoding="utf-8") as f:
+        szavak = {sor.strip() for sor in f if sor.strip()}
+
+        darab_szo = {szo[:i] for szo in szavak for i in range(1, len(szo) + 1)}
+    return szavak, darab_szo
+
+
+SZAVAK, DARAB_SZO = szotar_betoltese()
 
 def dekod2_auto(c1: str,c2: str): # 2 stringet kér be és egy listát ad vissza
     
-    kulcsok = []
+    kulcsok = []        
+    keres(c1, c2, "",kulcsok)
+    print(kulcsok)
+    return kulcsok
 
-    p1_uzenet = ""
-    p2_uzenet = ""
-    
-    lista_hossza = len(index)
-    
-    # Változók, stringek könnyebb kezelése érdekében
-    c1_levagott = c1
-    c2_levagott = c2
-    c1_kuka = ""
-    c2_kuka = ""
+# Segéd függvény    
+def keres(maradek_c1, maradek_c2, akt_kulcs, kulcsok):
         
-    
-    p_felteteles = ""
-    kulcs_kesz = ""
-    #brute-force
-    while len(kulcs_kesz) != min(len(c1), len(c2)):
-        for szo in mind:
-            kulcs_reszlet_szamok = []
+    # Ha a végére értünk a szövegnek találtunk egy megoldást
+    if len(maradek_c1) == 0 and len(maradek_c2) == 0:
+        kulcsok.append(akt_kulcs)
+        return   
+        
+    # Első feltétel
+    for szo in SZAVAK:
+        for p1_tipp in [szo + ' ', szo]:
             
-            p_felteteles = szo
+            # Ha a szo kisebb a maradék üzenetben akkor visszafejtjük.
+            if len(p1_tipp) <= len(maradek_c1):
 
-            # A titkosított üzeneteket levágom ugyanolyan hosszúra mint a kitaláltat
-            c1_reszlet = c1_levagott[:len(p_felteteles)]
+                # Visszafejtjük a kulcs egy darabját
+                c1_reszlet = maradek_c1[:len(p1_tipp)]
+                kulcs_reszlet = dekodolas(c1_reszlet, p1_tipp)
+
+                # A kapott kulcsdarabbal visszafejtjük a c2 egy darabját.
+                c2_reszlet = maradek_c2[:len(p1_tipp)]
+                p2_reszlet = dekodolas(c2_reszlet, kulcs_reszlet)
+
                 
-            # Kigyűjtöm a feltételezett szóhoz rendelt számokat
-            p1_kitalalt_szam = [betu_szamra.get(p1_szam, 0) for p1_szam in p_felteteles]  
-            c1_reszlet_szam = [betu_szamra.get(c1_szam, 0) for c1_szam in c1_reszlet]
+                # Ellenőrzés
+                p2_utolso_szo = p2_reszlet.split(' ')[-1]
                 
-                
-            # Kitalálom a kulcs részletet
-            for c1_szam, p1_szam in zip(c1_reszlet_szam, p1_kitalalt_szam):
-                kulcs_reszlet_szam = (c1_szam-p1_szam + lista_hossza) % lista_hossza
-                kulcs_reszlet_szamok.append(kulcs_reszlet_szam)
+                jo_prefix = True
+                if p2_reszlet.endswith(' '):
+                    # Ha szóköz van a végén, a szónak benne kell lennie a szótárban.
+                    if p2_utolso_szo not in SZAVAK:
+                        jo_prefix = False
+                else:
+                    # Ha nincs szóköz, akkor egy létező szó elejének kell lennie.
+                    if p2_utolso_szo not in DARAB_SZO:
+                        jo_prefix = False
 
-            # Átalakítom a kulcs részlet számait betűkre
-            kulcs = "".join(szam_beture.get(k,"?")for k in kulcs_reszlet_szamok)
 
-            # Visszafejtem p2-őt
-            c2_reszlet = c2_levagott[:len(p_felteteles)]
-            c2_reszlet_szam = [betu_szamra.get(num2, 0) for num2 in c2_reszlet ]
-                
-            p2_reszlet_szamok = []
-
-            for k_szam, c2_szam in zip(kulcs_reszlet_szamok, c2_reszlet_szam):
-                p2_reszlet_szam = (c2_szam - k_szam + lista_hossza) % lista_hossza
-                p2_reszlet_szamok.append(p2_reszlet_szam)
-
-            p2_reszlet = "".join(szam_beture.get( num, "?") for num in p2_reszlet_szamok)
-            
-            # Kezeljük, hogy helyes-e a feltételezett szó
-            if p2_reszlet in mind:
-                p2_uzenet += p2_reszlet
-                p1_uzenet += p_felteteles
-
-                c1_levagott = c1_levagott[len(c1_reszlet):]
-                c1_kuka += c1_reszlet
-
-                kulcs_kesz += kulcs
-                
-                c2_levagott = c2_levagott[len(c2_reszlet):]
-                c2_kuka += c2_reszlet
-                continue
-            
-            p2_reszlet = ""
-        if p2_reszlet not in mind:  
-            print("Nem találtam megfelelő szegmenst. A megfejtés elakadt.")
-            continue
-
-    print(p1_uzenet)
-    print(p2_uzenet)
-    return kulcs_kesz
+                if jo_prefix:
+                    # Ha a szó jó, akkor halad tovább a függvény
+                    keres(
+                        maradek_c1[len(p1_tipp):],
+                        maradek_c2[len(p1_tipp):],
+                        akt_kulcs + kulcs_reszlet,
+                        kulcsok
+                        )
+        
